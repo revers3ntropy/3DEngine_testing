@@ -26,6 +26,11 @@ class Vector2:
     def __init__(self, u, v):
         self.u = u
         self.v = v
+        self.w = 1
+
+    @staticmethod
+    def new():
+        return Vector2(0, 0)
 
 
 class Vector3:
@@ -49,6 +54,10 @@ class Vector3:
             self.x /= length
             self.y /= length
             self.z /= length
+
+    @staticmethod
+    def new():
+        return Vector3(0, 0, 0, 1)
 
 
 # ================================================================================================
@@ -107,7 +116,7 @@ def cross_product(v1: Vector3, v2: Vector3):
 # ================================================================================================
 #   intersect_plane - no clue
 # ================================================================================================
-def intersect_plane(plane_p: Vector3, plane_n: Vector3, line_start: Vector3, line_end: Vector3, t: float):
+def intersect_plane(plane_p: Vector3, plane_n: Vector3, line_start: Vector3, line_end: Vector3):
     plane_n.normalise()
     plane_d = -dot_product(plane_n, plane_p)
     ad = dot_product(line_start, plane_n)
@@ -115,4 +124,4 @@ def intersect_plane(plane_p: Vector3, plane_n: Vector3, line_start: Vector3, lin
     t = (-plane_d - ad) / (bd - ad)
     line_start_to_end = subtract(line_end, line_start)
     line_to_intersect = multiply(line_start_to_end, t)
-    return add(line_start, line_to_intersect)
+    return add(line_start, line_to_intersect), t

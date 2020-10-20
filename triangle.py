@@ -32,6 +32,10 @@ class Triangle:
         # texture coordinates
         self.t = [t1, t2, t3]
 
+    @staticmethod
+    def get_empty():
+        return Triangle(Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0))
+
 
 def clip_against_plane(plane_p: Vector3, plane_n: Vector3, in_tri: Triangle):
     # init a list of triangles for returning
@@ -114,12 +118,17 @@ def clip_against_plane(plane_p: Vector3, plane_n: Vector3, in_tri: Triangle):
 
         # but the two new points are at the locations where the
         # original sides of the triangle (lines) intersect with the plane
-        t = 0
-        out[0].p[1] = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[0], t)
+        t: float
+        temp = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[0])
+        out[0].p[1] = temp[0]
+        t = temp[1]
+
         out[0].t[1].u = t * (outside_point_texture[0].u - inside_point_texture[0].u) + inside_point_texture[0].u
         out[0].t[1].v = t * (outside_point_texture[0].v - inside_point_texture[0].v) + inside_point_texture[0].v
 
-        out[0].p[2] = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[1], t)
+        temp = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[1])
+        out[0].p[2] = temp[0]
+        t = temp[1]
         out[0].t[2].u = t * (outside_point_texture[1].u - inside_point_texture[0].u) + inside_point_texture[0].u
         out[0].t[2].v = t * (outside_point_texture[1].v - inside_point_texture[0].v) + inside_point_texture[0].v
 
@@ -131,8 +140,8 @@ def clip_against_plane(plane_p: Vector3, plane_n: Vector3, in_tri: Triangle):
         # represent a quad with two new triangles
 
         # adds a new point to the out list
-        out.append(Triangle(Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0)))
-        out.append(Triangle(Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector3(0, 0, 0, 1), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0)))
+        out.append(Triangle.get_empty())
+        out.append(Triangle.get_empty())
 
         # Copy appearance info to new triangles. Set to value for debug
         out[0].colour = in_tri.colour
@@ -147,15 +156,26 @@ def clip_against_plane(plane_p: Vector3, plane_n: Vector3, in_tri: Triangle):
         out[0].t[0] = inside_point_texture[0]
         out[0].t[1] = inside_point_texture[1]
 
-        t = 0
-        out[0].p[2] = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[0], t)
+        t: float
+        temp = vector.intersect_plane(plane_p, plane_n, inside_points[0], outside_points[0])
+        t = temp[1]
+        out[0].t[2].u = t * (outside_point_texture[0].u - inside_point_texture[0].u) + inside_point_texture[0].u
+        out[0].t[2].v = t * (outside_point_texture[0].v - inside_point_texture[0].v) + inside_point_texture[0].v
+        out[0].p[2] = temp[0]
 
         # The second triangle is composed of one of he inside points, a
         # new point determined by the intersection of the other side of the
         # triangle and the plane, and the newly created point above
         out[1].p[0] = inside_points[1]
+        out[1].t[0] = inside_point_texture[1]
         out[1].p[1] = out[0].p[2]
-        out[1].p[2] = vector.intersect_plane(plane_p, plane_n, inside_points[1], outside_points[0], t)
+        out[1].t[1] = out[1].t[2]
+
+        temp = vector.intersect_plane(plane_p, plane_n, inside_points[1], outside_points[0])
+        out[1].p[2] = temp[0]
+        t = temp[1]
+        out[1].t[2].u = t * (outside_point_texture[0].u - inside_point_texture[1].u) + inside_point_texture[1].u
+        out[1].t[2].v = t * (outside_point_texture[0].v - inside_point_texture[1].v) + inside_point_texture[1].v
 
         # Return the two newly formed triangles which form a quad
 

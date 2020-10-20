@@ -40,7 +40,7 @@ fov = 60
 
 fps = 0
 
-camera_movement_speed = 2
+camera_movement_speed = 4
 yaw = 0
 
 
@@ -72,7 +72,8 @@ cube = Mesh((
     Triangle(v3(1, 0, 1, 1), v3(0, 0, 1, 1), v3(0, 0, 0, 1),    v2(0, 1), v2(0, 0), v2(1, 0)),
     Triangle(v3(1, 0, 1, 1), v3(0, 0, 0, 1), v3(1, 0, 0, 1),    v2(0, 1), v2(1, 0), v2(1, 1)),
 ))
-
-with Image.open('hopper.jpg') as im:
-    px = im.load()
+#
+#with Image.open('texture_test.jpg') as im:
+#    texture = im
+#    px = im.load()
 #'''
